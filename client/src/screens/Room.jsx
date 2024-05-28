@@ -1,5 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
-import ReactPlayer from "react-player";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
 import "./RoomPage.css"; // Import the CSS file
@@ -7,8 +6,10 @@ import "./RoomPage.css"; // Import the CSS file
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
-  const [myStream, setMyStream] = useState();
-  const [remoteStream, setRemoteStream] = useState();
+  const [myStream, setMyStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const myVideoRef = useRef();
+  const remoteVideoRef = useRef();
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -20,9 +21,9 @@ const RoomPage = () => {
       audio: true,
       video: true,
     });
+    setMyStream(stream);
     const offer = await peer.getOffer();
     socket.emit("user:call", { to: remoteSocketId, offer });
-    setMyStream(stream);
   }, [remoteSocketId, socket]);
 
   const handleIncommingCall = useCallback(
@@ -41,8 +42,10 @@ const RoomPage = () => {
   );
 
   const sendStreams = useCallback(() => {
-    for (const track of myStream.getTracks()) {
-      peer.peer.addTrack(track, myStream);
+    if (myStream) {
+      for (const track of myStream.getTracks()) {
+        peer.peer.addTrack(track, myStream);
+      }
     }
   }, [myStream]);
 
@@ -80,23 +83,23 @@ const RoomPage = () => {
   }, []);
 
   useEffect(() => {
-    peer.peer.addEventListener("track", async (ev) => {
-      const remoteStream = ev.streams;
+    peer.peer.addEventListener("track", (ev) => {
+      const [stream] = ev.streams;
       console.log("GOT TRACKS!!");
-      setRemoteStream(remoteStream[0]);
+      setRemoteStream(stream);
     });
   }, []);
 
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
-    socket.on("incomming:call", handleIncommingCall);
+    socket.on("incoming:call", handleIncommingCall);
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
-      socket.off("incomming:call", handleIncommingCall);
+      socket.off("incoming:call", handleIncommingCall);
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
@@ -110,6 +113,18 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+  useEffect(() => {
+    if (myVideoRef.current && myStream) {
+      myVideoRef.current.srcObject = myStream;
+    }
+  }, [myStream]);
+
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
+
   return (
     <div className="room-container">
       <h1 className="room-header">Room Page</h1>
@@ -121,11 +136,11 @@ const RoomPage = () => {
           <>
             <h1 className="stream-header">My Stream</h1>
             <div className="player-container">
-              <ReactPlayer
-                className="ReactPlayer"
-                playing
+              <video
+                className="video-player"
+                ref={myVideoRef}
+                autoPlay
                 muted
-                url={myStream}
               />
             </div>
           </>
@@ -134,11 +149,11 @@ const RoomPage = () => {
           <>
             <h1 className="stream-header">Remote Stream</h1>
             <div className="player-container">
-              <ReactPlayer
-                className="ReactPlayer"
-                playing
+              <video
+                className="video-player"
+                ref={remoteVideoRef}
+                autoPlay
                 muted
-                url={remoteStream}
               />
             </div>
           </>

@@ -2,7 +2,7 @@ const { Server } = require("socket.io");
 
 const io = new Server(8000, {
   cors: {
-    origin: "https://vchatappsourabh.netlify.app/", 
+    origin: "https://vchatappsourabh.netlify.app", 
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -18,8 +18,8 @@ io.on("connection", (socket) => {
     const { email, room } = data;
     emailToSocketIdMap.set(email, socket.id);
     socketidToEmailMap.set(socket.id, email);
-    io.to(room).emit("user:joined", { email, id: socket.id });
     socket.join(room);
+    io.to(room).emit("user:joined", { email, id: socket.id });
     io.to(socket.id).emit("room:join", data);
   });
 
@@ -39,6 +39,13 @@ io.on("connection", (socket) => {
   socket.on("peer:nego:done", ({ to, ans }) => {
     console.log("peer:nego:done", ans);
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
+  });
+
+  socket.on("disconnect", () => {
+    const email = socketidToEmailMap.get(socket.id);
+    emailToSocketIdMap.delete(email);
+    socketidToEmailMap.delete(socket.id);
+    console.log(`Socket Disconnected`, socket.id);
   });
 });
 
