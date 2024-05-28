@@ -9,7 +9,8 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = (props) => {
-  const socket = useMemo(() => io("localhost:8000"), []);
+  const serverUrl = process.env.REACT_APP_SERVER_URL || "http://localhost:8000";
+  const socket = useMemo(() => io(serverUrl, { transports: ['websocket', 'polling'] }), [serverUrl]);
 
   return (
     <SocketContext.Provider value={socket}>
