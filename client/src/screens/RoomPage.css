@@ -1,0 +1,129 @@
+/* RoomPage.css */
+
+@keyframes gradientBackground {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  @keyframes buttonGlow {
+    0% {
+      box-shadow: 0 0 5px #007bff;
+    }
+    50% {
+      box-shadow: 0 0 20px #007bff;
+    }
+    100% {
+      box-shadow: 0 0 5px #007bff;
+    }
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .room-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #00c6ff, #0072ff, #00c6ff, #0072ff);
+    background-size: 200% 200%;
+    animation: gradientBackground 10s ease infinite;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .room-header {
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .room-status {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  button {
+    padding: 15px 30px;
+    margin: 15px;
+    border: none;
+    border-radius: 12px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.3s;
+    animation: buttonGlow 2s infinite alternate;
+   
+  }
+  
+button:hover {
+  transform: scale(1.1);
+}
+
+.player-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 20px; /* Reduced the gap for a tighter layout */
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.player-container {
+  position: relative;
+  width: 35%; /* Reduced width to make the videos smaller */
+  min-width: 250px; /* Adjusted for a more compact view */
+  aspect-ratio: 16 / 9;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.ReactPlayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.stream-header {
+  margin-top: 20px;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .room-header {
+    font-size: 2rem;
+  }
+
+  button {
+    width: 80%;
+  }
+
+  .player-container {
+    width: 80%; /* Reduced for better fit on smaller screens */
+    height: auto;
+    aspect-ratio: auto;
+  }
+}
+
+  
