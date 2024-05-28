@@ -1,11 +1,6 @@
-const express = require("express");
 const { Server } = require("socket.io");
-const http = require("http");
-const path = require("path");
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
+const io = new Server(8000, {
   cors: true,
 });
 
@@ -40,16 +35,4 @@ io.on("connection", (socket) => {
     console.log("peer:nego:done", ans);
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
-});
-
-// Serve static files from the "public" directory
-const publicPath = path.join(__dirname, "public");
-app.use(express.static(publicPath));
-
-// Define the port for production
-const PORT = process.env.PORT || 8000;
-
-// Start listening on the defined port
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
