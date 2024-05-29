@@ -1,12 +1,12 @@
 @keyframes gradientBackground {
   0% {
-    background-position: 0% 50%;
+    background-position: 50% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 50% 50%;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 50% 50%;
   }
 }
 
@@ -123,8 +123,20 @@ button:hover {
   }
 
   .player-container {
-    width: 80%; /* Reduced for better fit on smaller screens */
+    width: 100%; /* Full width for better fit on smaller screens */
     height: auto;
     aspect-ratio: auto;
+    margin-bottom: 20px; /* Add margin to separate player containers */
+  }
+
+  .room-container {
+    background-size: cover; /* Ensure the background covers the entire container */
+    background-position: center top; /* Position the background at the top center */
+    height: auto; /* Allow the container to adjust its height based on content */
+    padding: 20px; /* Add padding for better spacing */
+  }
+
+  .room-status {
+    font-size: 1rem; /* Adjust font size for room status */
   }
 }
